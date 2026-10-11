@@ -20,7 +20,7 @@
     <img src="media/goofish-cli-promo.gif" alt="goofish-cli 演示" width="760">
   </a>
   <br>
-  <em>▶️ 点击查看带终端音效 + 配乐的高清 MP4（46s）</em>
+  <em>▶️ 点击查看带配音 + 配乐的高清 MP4（1:32）</em>
 </p>
 
 <!--
