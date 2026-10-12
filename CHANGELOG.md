@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.5.3](https://github.com/fancyboi999/goofish-cli/compare/v0.5.2...v0.5.3) (2026-10-12)
+
+
+### Documentation
+
+* **readme:** embed native GitHub video player with sound ([101211b](https://github.com/fancyboi999/goofish-cli/commit/101211b6889455307ce9dc7e1e5f3c1db7c67508))
+* **readme:** embed native GitHub video player with sound ([a7bdfbd](https://github.com/fancyboi999/goofish-cli/commit/a7bdfbd0dfd8637f95e25e81edbf72e1c0762451))
+
 ## [0.5.2](https://github.com/fancyboi999/goofish-cli/compare/v0.5.1...v0.5.2) (2026-10-10)
 
 
