@@ -51,3 +51,6 @@ Thumbs.db
 
 # npm / ClawHub package artifacts
 *.tgz
+
+# Local Cookie import helper
+.cookie-import-venv/

@@ -1,0 +1,14 @@
+.git
+.venv
+.env
+.env.*
+__pycache__
+.pytest_cache
+*.pyc
+*cookies*.json
+credentials.json
+media
+work
+outputs
+
+.cookie-import-venv

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "goofish": {
+      "command": "docker",
+      "args": ["exec", "-i", "goofish-cli", "goofish-cli"]
+    }
+  }
+}

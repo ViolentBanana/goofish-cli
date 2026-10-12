@@ -1,0 +1,2 @@
+browser-cookie3==0.20.1
+tomli==2.2.1

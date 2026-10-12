@@ -1,0 +1,25 @@
+name: goofish-cli
+services:
+  goofish:
+    build: .
+    image: goofish-cli:local
+    platform: linux/amd64
+    container_name: goofish-cli
+    hostname: goofish-cli
+    init: true
+    restart: unless-stopped
+    shm_size: 1gb
+    environment:
+      GOOFISH_NO_CHROME_BOOTSTRAP: "1"
+      DISPLAY: ":99"
+    volumes:
+      - goofish-state:/home/goofish/.goofish-cli
+    healthcheck:
+      test: ["CMD", "goofish", "version"]
+      interval: 30s
+      timeout: 15s
+      start_period: 20s
+      retries: 3
+volumes:
+  goofish-state:
+    name: goofish-cli-state
