@@ -15,20 +15,17 @@
 
 </div>
 
-## Docker + Codex 快速开始（本 fork 新增）
+## 用 Codex 操作闲鱼
 
-这个公开 fork 基于 [fancyboi999/goofish-cli](https://github.com/fancyboi999/goofish-cli)，新增了 Docker 部署、Mac Chrome 登录态一键导入、Codex MCP 自动配置和下方的使用提示词。保留上游 Apache-2.0 许可证及原作者信息。
+本 fork 基于 [fancyboi999/goofish-cli](https://github.com/fancyboi999/goofish-cli)，新增 Docker 部署、Mac Chrome 登录态导入和 Codex 接入脚本，保留上游许可证及作者信息。
 
-**想用这个 fork 的一键功能，请克隆本仓库。`pip install goofish-cli` / `uvx goofish-cli` 安装的是上游 PyPI 包，不包含这里新增的安装脚本。**
+**第一次安装：照下面的“第一次安装”操作。Docker 已经部署好：直接看“已有 Docker，只接入 Codex”。两种方式选一种即可。**
 
-### 1. 准备环境
+### 第一次安装（Mac）
 
-- 安装并启动 Docker Desktop；Linux 可使用 Docker Engine + Docker Compose。
-- 安装 Python 3.9 或更高版本（在终端运行 `python3 --version` 检查）。
-- 使用本机 Codex 客户端；本方案通过本地 stdio 连接，不依赖公网服务地址。
-- Mac 用户先在 Chrome 登录 [闲鱼](https://www.goofish.com)。自动导入支持 macOS，Linux 使用 Cookie JSON 手动导入。
+先启动 Docker Desktop，在 Mac Chrome 登录 [闲鱼](https://www.goofish.com)，并安装 Codex、Python 3.9 或更高版本。
 
-### 2. 克隆并运行安装脚本
+打开 Mac 的“终端”，复制下面 3 行执行：
 
 ```bash
 git clone https://github.com/ViolentBanana/goofish-cli.git
@@ -36,85 +33,58 @@ cd goofish-cli
 bash scripts/setup-docker-codex.sh
 ```
 
-Mac 也可以在项目文件夹内双击 **`安装并接入Codex.command`**。
+也可以在下载好的项目文件夹中双击 **`安装并接入Codex.command`**。
 
-安装脚本会依次执行：
+等窗口显示 **“部署及 Codex MCP 配置完成”**，就已经部署并接入了。**不用再手动填写 MCP 配置。** 如弹出 Chrome 钥匙串提示，请允许访问。
 
-1. 在项目内准备独立 Python 工具环境。
-2. 构建并启动 `goofish-cli` 容器，验证 Chrome 和 MCP 能否启动。
-3. 将闲鱼 MCP 添加到 Codex 配置，保留其他设置，已有配置会先备份。
-4. 从 Mac Chrome 读取你的闲鱼登录态，通过标准输入送入容器并加密保存。
-5. 验证账号是否登录有效。
-
-首次构建需要下载 Linux Chrome 和依赖，会花一些时间。Apple Silicon 使用 amd64 模拟运行。Mac 上如弹出 Chrome Safe Storage 钥匙串提示，请允许访问。
-
-若暂时不导入账号，或使用 Linux：
-
-```bash
-bash scripts/setup-docker-codex.sh --skip-login
-```
-
-随后按 [DOCKER.md](./DOCKER.md) 的步骤导入自己的 Cookie JSON。代码仓库不包含任何人的账号、Cookie 或登录数据。
-
-### 3. 重启 Codex，开始对话
-
-完全重启 Codex，或使用客户端提供的 MCP 重新加载功能，然后开始一个本机会话。先输入：
+完全退出 Codex，再打开并新建一个本地聊天，发送：
 
 ```text
-请使用 goofish MCP 检查闲鱼登录状态，再列出我的在售商品。
-只进行查询，返回商品标题、价格和链接。如果工具未连接或登录失效，请明确告诉我。
+请使用 goofish MCP 检查我的闲鱼登录状态，再列出我的在售商品。
+只查询，不修改或下架商品。
 ```
 
-能看到真实商品数据，才算整个“对话 → MCP → Docker → 闲鱼”流程接通。Codex CLI 用户可用 `codex mcp list` 查看注册信息，或在 CLI 会话中用 `/mcp` 查看活动服务。
+Codex 调用工具并返回登录状态、商品列表，就是接入成功。首次构建需要下载 Linux Chrome 和依赖，请等待脚本完成。
 
-### Cookie 失效时一键重新导入
+> Windows / Linux：目前自动读取 Chrome Cookie 的脚本只支持 Mac。Linux 可运行 `bash scripts/setup-docker-codex.sh --skip-login`，随后按 [DOCKER.md](./DOCKER.md) 导入自己的 Cookie JSON。Windows 暂未提供一键安装脚本。
 
-先在 Chrome 重新登录闲鱼，再双击 **`一键导入闲鱼登录.command`**，或运行：
+### 已有 Docker，只接入 Codex
 
-```bash
-bash 一键导入闲鱼登录.command
+**前提：`goofish-cli` 容器已运行，并已导入闲鱼登录态。如果你已经运行过上面的安装脚本，跳过手动添加，直接重启 Codex 并测试。**
+
+**第 1 步：打开 MCP 设置。** 在桌面客户端的设置中找到 **MCP servers（MCP 服务器）**，选择 **Add server（添加服务器）**。
+
+**第 2 步：照表填写。**
+
+| 界面里的字段 | 填入的内容 |
+|---|---|
+| 名称 / Name | `goofish` |
+| 类型 / Transport | **STDIO** |
+| 命令 / Command | `/usr/local/bin/docker`（Mac Docker Desktop 常见路径） |
+| 参数 / Arguments | 下面的 4 个参数，分别填写 |
+
+```text
+exec
+-i
+goofish-cli
+goofish-cli
 ```
 
-支持指定 Chrome 用户配置目录：
+如果参数框使用单行形式，填写 `exec -i goofish-cli goofish-cli`。最后两个 `goofish-cli` 是有意重复的：一个是容器名称，一个是容器里的程序名称。**“命令”框只填 Docker 路径，不填整条命令。**
 
-```bash
-bash 一键导入闲鱼登录.command --profile "Profile 1"
-```
+若提示找不到 Docker，在终端执行 `command -v docker`，把输出的路径填入“命令”框。此连接方式不需要填写服务器网址或 API Key。
 
-Cookie 不会写成明文导出文件，也不会写进 MCP 配置；它在 `goofish-cli-state` Docker volume 中加密保存。普通容器重建会保留数据，`docker compose down -v` 会删除登录态。
+**第 3 步：保存、启用 `goofish`，重启 Codex，并新建本地聊天。** 然后发送上面的登录检查提示词，确认工具能实际返回数据。若客户端提供“重启 MCP 服务”，也可以按该提示重新加载。
 
-### 只配置 MCP / 手动配置
+找不到添加入口、习惯用终端，或想直接修改配置文件时，见 [Codex 详细接入指南](./docs/mcp-setup.md#codex-docker)。设置字段依据 [OpenAI 官方 MCP 文档](https://learn.chatgpt.com/docs/extend/mcp?surface=app)。
 
-已经部署 Docker 的用户无需重新构建：
+### 以后登录失效怎么办？
 
-```bash
-# 自动准备脚本依赖，再注册 MCP
-TASK_PYTHON="$(bash scripts/prepare-host-python.sh)"
-"$TASK_PYTHON" scripts/configure_codex_mcp.py
-```
+先在 Chrome 重新登录闲鱼，再双击 **`一键导入闲鱼登录.command`**。无需重新部署或重新配置 Codex。
 
-脚本默认使用 `${CODEX_HOME:-$HOME/.codex}/config.toml`，遇到连接、超时或权限选项不同的 `[mcp_servers.goofish]` 配置（包括禁用服务或限制工具）会报错并保留原文件。若只想自己配置，在 Codex 的 MCP 设置中填写：
+本仓库不包含账号数据；每个人需要导入自己的登录态。Cookie 会在容器的数据卷中加密保存。
 
-- 名称：`goofish`
-- 连接类型：`STDIO`
-- 命令：`command -v docker` 返回的绝对路径
-- 参数（每个独立）：`exec`、`-i`、`goofish-cli`、`goofish-cli`
-
-等价 TOML 示例（将 Docker 路径替换成你自己的）：
-
-```toml
-[mcp_servers.goofish]
-command = "/usr/local/bin/docker"
-args = ["exec", "-i", "goofish-cli", "goofish-cli"]
-startup_timeout_sec = 30
-tool_timeout_sec = 180
-default_tools_approval_mode = "prompt"
-disabled_tools = ["auth_login", "auth_reset_guard", "message_watch", "skills_install"]
-```
-
-这几个管理或长期阻塞工具留给用户在终端执行；搜索、商品、会话查询和发布/下架/消息发送工具仍可由 Codex 使用。`prompt` 表示工具调用需要按客户端权限规则确认，提示词也应要求实际写操作先审核。配置选项见 [OpenAI 官方 MCP 文档](https://learn.chatgpt.com/docs/extend/mcp?surface=cli)。
-
-其他支持本地 stdio 的客户端可参考 [mcp.docker.json](./mcp.docker.json)，并按客户端要求填写 Docker 绝对路径。不要加 `-t`；Docker 必须保持运行。
+**注意：** `pip install goofish-cli` / `uvx goofish-cli` 安装的是上游 PyPI 包，不包含本 fork 的一键脚本。使用本 fork 请按上面的方法克隆仓库。浏览器、数据卷、手动导入及故障处理见 [DOCKER.md](./DOCKER.md)。
 
 ### 可以直接复制给 Codex 的 Prompt
 

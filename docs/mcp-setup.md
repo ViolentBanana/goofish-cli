@@ -1,5 +1,88 @@
 # MCP 接入指南
 
+<a id="codex-docker"></a>
+
+## Codex：连接 Docker 中的闲鱼
+
+如果已运行本 fork 的 `安装并接入Codex.command` 或 `scripts/setup-docker-codex.sh`，脚本已自动配置，直接重启 Codex，发送下面的测试提示词即可。不要重复添加同名服务。
+
+### 桌面端：在设置中填写
+
+1. 打开设置，找到 **MCP servers / MCP 服务器**。
+2. 选择 **Add server / 添加服务器**。
+3. 按下表填写，并保存、启用该服务器。
+
+| 字段 | 内容 |
+|---|---|
+| Name | `goofish` |
+| Transport | `STDIO` |
+| Command | 终端运行 `command -v docker` 后得到的绝对路径；Mac Docker Desktop 常见为 `/usr/local/bin/docker` |
+| Arguments | `exec`、`-i`、`goofish-cli`、`goofish-cli`，共 4 项 |
+
+参数是多行输入时，每行填一项；单行输入时填 `exec -i goofish-cli goofish-cli`。不要把参数拼到 Command 里，不要添加 `-t`，也不要选择 HTTP 或填写服务器网址。
+
+保存后完全退出并重新打开 Codex，新建一个本地聊天。桌面端和 CLI 使用同一台主机的 Codex 配置；不用在每个项目中重新添加。
+
+### CLI：一条命令注册
+
+已安装 Codex CLI、Docker 容器已运行的用户，可以在本机终端运行：
+
+```bash
+codex mcp add goofish -- "$(command -v docker)" exec -i goofish-cli goofish-cli
+codex mcp list
+```
+
+列表中应出现 `goofish`，并处于启用状态。然后新开 Codex 会话；CLI 会话中可输入 `/mcp` 检查服务状态。
+
+此命令只注册连接，不能代替 Docker 部署或账号登录。自动安装脚本另外设置了更长的调用超时和工具限制，完整设置见下方。已有自动配置时不要再执行注册命令，以免替换这些设置。
+
+### 配置文件：复制 TOML
+
+只有需要手动编辑时才使用此方法。打开 `~/.codex/config.toml`，在文件末尾追加下面这段，**保留已有内容**。如已设置 `CODEX_HOME`，则编辑该目录下的 `config.toml`。
+
+```toml
+[mcp_servers.goofish]
+command = "/usr/local/bin/docker"
+args = ["exec", "-i", "goofish-cli", "goofish-cli"]
+startup_timeout_sec = 30
+tool_timeout_sec = 180
+default_tools_approval_mode = "prompt"
+disabled_tools = ["auth_login", "auth_reset_guard", "message_watch", "skills_install"]
+```
+
+把 `command` 改成自己运行 `command -v docker` 得到的路径。如已有 `[mcp_servers.goofish]`，修改已有条目，不要追加第二个同名条目。保存后重启 Codex。
+
+自动安装脚本会先备份现有配置，保留其他模型/MCP 设置；已有闲鱼配置被禁用，或连接、超时、权限设置不同时，会提示冲突并停止，避免覆盖你的设置。
+
+上述 4 个管理或常驻工具留给用户在终端操作；正常的商品搜索、商品读取、发布、下架、会话查询及消息发送仍可用。写操作应先审核目标和内容，再由用户确认。
+
+### 接入成功后怎么用？
+
+在 Codex 的新聊天里发送：
+
+```text
+请使用 goofish MCP 检查我的闲鱼登录状态，再列出我的在售商品。
+只查询，不修改或下架商品。
+```
+
+看到实际工具调用并返回登录状态、商品列表，才证明连接及登录都有效。若账号没有在售商品，返回空列表也是正常结果。更多可复制提示词见 [README](../README.md#可以直接复制给-codex-的-prompt)。
+
+### 常见问题
+
+| 现象 | 怎么处理 |
+|---|---|
+| Codex 没有看到 `goofish` | 确认已经保存并启用配置，然后重启、新建本地会话 |
+| 找不到 `docker` | 在终端运行 `command -v docker`，把结果填入 Command |
+| 容器没有运行 | 启动 Docker Desktop；在项目目录运行 `docker compose up -d` |
+| MCP 已连接，但提示未登录 | Mac Chrome 登录闲鱼后，运行 `一键导入闲鱼登录.command`；其他系统参考 DOCKER.md |
+| 搜索超时 | 在 MCP 配置中设置 `tool_timeout_sec = 180`，再重新加载 |
+| 提示同名配置冲突 | 在 MCP 设置中检查旧的 `goofish`，确认容器命令、启用状态和工具限制；不要覆盖整个配置文件 |
+
+官方配置说明：[OpenAI MCP 文档](https://learn.chatgpt.com/docs/extend/mcp?surface=app)。Docker 部署及 Cookie 导入：[DOCKER.md](../DOCKER.md)。
+
+---
+
+
 ## OpenClaw / ClawHub
 
 要求：OpenClaw `2026.6.1` 及以上，且 PATH 中可以执行 `uvx`。
