@@ -15,21 +15,11 @@
 
 </div>
 
-<p align="center">
-  <a href="media/goofish-cli-promo.mp4">
-    <img src="media/goofish-cli-promo.gif" alt="goofish-cli 演示" width="760">
-  </a>
-  <br>
-  <em>▶️ 点击查看带配音 + 配乐的高清 MP4（1:32）</em>
-</p>
+https://github.com/user-attachments/assets/ae20ae2f-ccdf-4d3e-a947-69182d4c4eff
 
-<!--
-  想在 README 里内嵌「带声音的播放器」？GitHub 上唯一的办法：
-  1. 打开本仓库任意 issue / PR 评论框（或 Releases 编辑页）
-  2. 把 media/goofish-cli-promo.mp4 拖进去，等它生成 https://github.com/user-attachments/assets/xxxx 链接
-  3. 把那串链接单独一行粘进这里，GitHub 会自动渲染成带声音的播放器
-  （提交进仓库的 mp4 用 <video> 标签会被 GitHub 过滤，不渲染）
--->
+<p align="center">
+  <em>▶️ 播放不了？<a href="media/goofish-cli-promo.mp4">点这里下载高清 MP4（1:32）</a></em>
+</p>
 
 `goofish-cli` 把闲鱼（Xianyu/Goofish）的核心运营能力抽成一套结构化命令，
 **同一份定义**同时输出给四种消费者：
